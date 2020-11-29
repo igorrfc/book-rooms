@@ -1,4 +1,4 @@
-import { dealsConnector$, dealsStream$ } from './data/sources/deals';
+import { dealsConnector$, dealsStream$ } from '../data/sources/deals';
 import React from 'react';
 
 import { Status } from 'types/storeContext';

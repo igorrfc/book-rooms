@@ -2,10 +2,14 @@ import React from 'react';
 import { match } from 'ts-pattern';
 import styled from 'styled-components';
 
+import LocaleContext from 'contexts/LocaleContext';
+
 import Nothing from 'components/Nothing';
 import { TitleSmall, TextMedium, TitleMedium } from 'components/typography';
 import { PrimaryButton } from 'components/buttons';
+
 import { IOfferDetails } from 'selectors/deals';
+
 import { Currency } from '../../types/deal';
 
 interface Props {
@@ -53,7 +57,7 @@ const Deal = styled.div`
 `;
 
 const DetailsText = styled(TextMedium)`
-  flex: 6;
+  flex: 5;
 `;
 
 const Price = styled(TitleMedium)`
@@ -69,7 +73,7 @@ const CurrencySymbol = styled.span`
 `;
 
 const NegotiationWrapper = styled.div`
-  flex: 4;
+  flex: 5;
   max-width: 95px;
 `;
 
@@ -91,11 +95,15 @@ const AddRoom = styled.div`
   display: flex;
 `;
 
-const DealType = styled(TextMedium)`
+const DealType = styled.div`
   background-color: grey;
-  padding: 5px;
+  padding: 3px;
+`;
+
+const DealTypeText = styled(TextMedium)`
   text-align: center;
   overflow: hidden;
+  font-size: 10px;
 `;
 
 const currencySymbol = {
@@ -103,7 +111,8 @@ const currencySymbol = {
 };
 
 function DealsList({ deals }: Props) {
-  console.log(deals);
+  const { locale } = React.useContext(LocaleContext);
+
   return match(deals)
     .with({}, (deals) => (
       <div data-testid="deals">
@@ -120,12 +129,16 @@ function DealsList({ deals }: Props) {
                       <RoomDetails>
                         <DetailsText>
                           {room.details.length > 0
-                            ? room.details.join(' • ')
+                            ? room.details.map(locale).join(' • ')
                             : null}
                         </DetailsText>
                         <NegotiationWrapper>
                           {room.dealType ? (
-                            <DealType>{room.dealType}</DealType>
+                            <DealType>
+                              <DealTypeText>
+                                {locale(room.dealType)}
+                              </DealTypeText>
+                            </DealType>
                           ) : null}
 
                           <PriceWrapper>

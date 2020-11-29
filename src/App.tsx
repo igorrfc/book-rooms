@@ -4,7 +4,8 @@ import createStoreProvider from 'utils/createStoreProvider';
 import DealsScreen from 'screens/DealsScreen';
 
 import { IStoreContext } from 'types/storeContext';
-import StoreContext, { sources } from './StoreContext';
+import StoreContext, { sources } from 'contexts/StoreContext';
+import { LocaleProvider } from 'contexts/LocaleContext';
 
 import 'normalize.css';
 
@@ -17,7 +18,9 @@ function App() {
   return (
     <>
       <StoreProvider>
-        <DealsScreen />
+        <LocaleProvider>
+          <DealsScreen />
+        </LocaleProvider>
       </StoreProvider>
     </>
   );
