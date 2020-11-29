@@ -25,7 +25,7 @@ test('subscribes data sources and provides result state to consumers', async () 
     return (
       <>
         <button onClick={triggerName}>Refresh</button>
-        <p>{state.foo}</p>
+        <p>{state.foo?.data}</p>
       </>
     );
   }
