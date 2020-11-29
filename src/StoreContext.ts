@@ -1,22 +1,20 @@
-import { Observable, Subject } from 'rxjs';
 import { dealsConnector$, dealsStream$ } from './data/sources/deals';
 import React from 'react';
 
-export interface IStoreContext {
-  state: {
-    deals: any;
-  };
-  sources: {
-    deals: { stream: Observable<any>; connector: Subject<any> };
-  };
-}
+import { Status } from 'types/storeContext';
+import { IStoreContext } from 'types/storeContext';
 
 export const sources = {
   deals: { stream: dealsStream$, connector: dealsConnector$ },
 };
 
 const StoreContext = React.createContext<IStoreContext>({
-  state: { deals: {} },
+  state: {
+    deals: {
+      status: Status.Standby,
+      data: undefined,
+    },
+  },
   sources: sources,
 });
 
