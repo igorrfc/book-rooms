@@ -13,7 +13,7 @@ import { groupedDealsByRoom } from 'selectors/deals';
 
 import DealsList from './DealsList';
 
-import StoreContext from '../../StoreContext';
+import StoreContext from 'contexts/StoreContext';
 
 const Container = styled.div`
   padding: 0 5%;
