@@ -1,5 +1,5 @@
 import React from 'react';
-import { concat, defer } from 'rxjs';
+import { defer, concat } from 'rxjs';
 import { match, __ } from 'ts-pattern';
 import styled from 'styled-components';
 
@@ -14,6 +14,7 @@ import { groupedDealsByRoom, IOfferDetails } from 'selectors/deals';
 import StoreContext from 'contexts/StoreContext';
 
 import Deal from './Deal';
+import Filters from './Filters';
 
 const Header = styled.div`
   display: flex;
@@ -22,12 +23,15 @@ const Header = styled.div`
   justify-content: center;
   padding: 20px 2%;
   box-shadow: 0 1px 0 0 rgba(0, 44, 97, 0.1);
-  margin-bottom: 17px;
 `;
 
 const Container = styled.div`
   padding: 0 5%;
   background-color: ${Colors.White};
+`;
+
+const FiltersContainer = styled.div`
+  margin-bottom: 17px;
 `;
 
 const HotelName = styled(TitleSmall)`
@@ -74,7 +78,7 @@ function DealsScreen() {
 
   React.useEffect(() => {
     const connectorSub = sources.deals.connector.subscribe({
-      complete: () => toggleLoading(false),
+      next: () => toggleLoading(false),
     });
 
     const streamSub = concat(
@@ -94,11 +98,18 @@ function DealsScreen() {
         <TitleMedium>All Deals</TitleMedium>
         <HotelName>Doubletree by hilton hotels</HotelName>
       </Header>
+      <FiltersContainer>
+        <Filters />
+      </FiltersContainer>
       <Container>
         {match({ isLoading, state })
           .with({ isLoading: true }, Loading)
           .with(
-            { state: { deals: { status: Status.Success, data: {offers: __} } } },
+            {
+              state: {
+                deals: { status: Status.Success, data: { offers: __ } },
+              },
+            },
             ({ state }) => <DealsList deals={groupedDealsByRoom(state)} />
           )
           .otherwise(Nothing)}

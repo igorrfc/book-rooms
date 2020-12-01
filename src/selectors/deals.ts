@@ -1,13 +1,42 @@
 import { createSelector } from 'reselect';
-import { groupBy, ifElse, pipe, prop, contains } from 'ramda';
+import { contains, groupBy, ifElse, pipe, prop } from 'ramda';
+import { match } from 'ts-pattern';
 
-import { IOffer, Tags, Meal, Cug, Currency } from 'types/deal';
+import { Cug, Currency, IOffer, Meal, Tags } from 'types/deal';
 import { IState } from 'types/storeContext';
-
-const deals = ({ deals }: IState) => deals;
+import DealFilter from '../types/dealFilter';
 
 function returnValue(value: any) {
   return () => value;
+}
+
+function ifHasWifiElse(truthyResult: any, falsyResult: any) {
+  return pipe(
+    (offer: IOffer) => offer.tags || [],
+    ifElse(
+      contains(Tags.Wifi),
+      returnValue(truthyResult),
+      returnValue(falsyResult)
+    )
+  );
+}
+
+function ifCanPayLaterElse(truthyResult: any, falsyResult: any) {
+  return pipe(
+    prop<string, any>('canPayLater'),
+    ifElse(Boolean, returnValue(truthyResult), returnValue(falsyResult))
+  );
+}
+
+function ifHasBreakfastElse(truthyResult: any, falsyResult: any) {
+  return pipe(
+    prop<string, any>('meals'),
+    ifElse(
+      contains(Meal.Breakfast),
+      returnValue(truthyResult),
+      returnValue(falsyResult)
+    )
+  );
 }
 
 export enum DealType {
@@ -24,40 +53,40 @@ export interface IOfferDetails {
   currency: Currency;
 }
 
-export const groupedDealsByRoom = createSelector(deals, (deals) => {
-  if (!deals.data?.offers) return null;
+const deals = ({ deals }: IState) => deals;
+const dealFilter = ({ dealFilter }: IState) => dealFilter;
 
-  const groupedOffers = groupBy(
-    (offer: IOffer) => offer.roomName,
-    deals.data.offers
-  );
+export const filteredDeals = createSelector(
+  deals,
+  dealFilter,
+  (deals, dealFilter) => {
+    const offers = deals.data?.offers || [];
+    return match(dealFilter.data)
+      .with(DealFilter.PayLater, () =>
+        offers.filter(ifCanPayLaterElse(true, false))
+      )
+      .with(DealFilter.FreeWifi, () =>
+        offers.filter(ifHasWifiElse(true, false))
+      )
+      .with(DealFilter.Breakfast, () =>
+        offers.filter(ifHasBreakfastElse(true, false))
+      )
+      .otherwise(() => offers);
+  }
+);
+
+export const groupedDealsByRoom = createSelector(filteredDeals, (offers) => {
+  const groupedOffers = groupBy((offer: IOffer) => offer.roomName, offers);
 
   const detailsGetters = [
-    pipe(
-      prop<string, any>('meals'),
-      ifElse(
-        contains(Meal.Breakfast),
-        returnValue('breakfast'),
-        returnValue(null)
-      )
-    ),
+    ifHasBreakfastElse('breakfast', null),
     pipe(
       prop<string, any>('cancellationPolicy'),
       prop<string, any>('freeRefundableUntil'),
       ifElse(Boolean, returnValue('room.refundable'), returnValue(null))
     ),
-    pipe(
-      (offer: IOffer) => offer.tags || [],
-      ifElse(
-        contains(Tags.Wifi),
-        returnValue('room.freeWifi'),
-        returnValue(null)
-      )
-    ),
-    pipe(
-      prop<string, any>('canPayLater'),
-      ifElse(Boolean, returnValue('room.payLater'), returnValue(null))
-    ),
+    ifHasWifiElse('room.freeWifi', null),
+    ifCanPayLaterElse('room.payLater', null),
   ];
 
   return Object.entries(groupedOffers).reduce<Record<string, IOfferDetails[]>>(

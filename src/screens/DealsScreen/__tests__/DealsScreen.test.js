@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, waitFor, act } from '@testing-library/react';
-import { Subject, interval, from } from 'rxjs';
+import { Subject, interval, from, of } from 'rxjs';
 import { first } from 'rxjs/operators';
 
 import createStoreProvider from 'utils/createStoreProvider';
@@ -8,10 +8,16 @@ import createStoreProvider from 'utils/createStoreProvider';
 import StoreContext from 'contexts/StoreContext';
 import Deals from '..';
 
+const initialState = {
+  deals: {},
+  dealFilter: { data: {} },
+};
+
 function DealsScreen({ context, props = {} }) {
   const StoreProvider = createStoreProvider(
     StoreContext.Provider,
-    context.sources
+    context.sources,
+    initialState
   );
 
   return (
@@ -33,9 +39,17 @@ describe('DealsScreen', () => {
         stream: interval(1000).pipe(first()),
         connector,
       },
+      dealFilter: {
+        stream: of(null),
+        connector: new Subject(),
+      },
     };
 
-    render(<DealsScreen context={{ sources, state: { deals: {} } }} />);
+    render(
+      <DealsScreen
+        context={{ sources, state: { deals: {}, dealFilter: { data: {} } } }}
+      />
+    );
 
     expect(screen.queryByTestId('loading')).toBeInTheDocument();
 
@@ -55,6 +69,10 @@ describe('DealsScreen', () => {
       deals: {
         stream: from(new Promise((res) => res(streamResponse))),
         connector,
+      },
+      dealFilter: {
+        stream: of(null),
+        connector: new Subject(),
       },
     };
     const state = {

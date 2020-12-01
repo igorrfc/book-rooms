@@ -5,4 +5,5 @@ export default {
   'room.negotiationDeal.private': 'Private Deal',
   'room.negotiationDeal.negotiation': 'Negotiation Deal',
   breakfast: 'Breakfast',
+  filters: 'Filters'
 };

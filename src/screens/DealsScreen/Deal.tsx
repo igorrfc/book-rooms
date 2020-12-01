@@ -62,7 +62,7 @@ const DealItem = styled.div`
   margin: 0 8px;
   padding-top: 8px;
   padding-bottom: 8px;
-  
+
   &:not(:first-child) {
     border-top: 1px solid ${Colors.TropicalBlue};
   }
@@ -156,7 +156,7 @@ const MoreDeals = styled.button`
   background-color: rgba(255, 255, 255, 0.95);
   border: none;
   outline: inherit;
-  box-shadow: 0 1.5px 4px 0 rgba(145,175,209,0.24);
+  box-shadow: 0 1.5px 4px 0 rgba(145, 175, 209, 0.24);
   border-bottom-right-radius: 7px;
   border-bottom-left-radius: 7px;
 `;
@@ -196,11 +196,11 @@ function Deal({
 
   React.useEffect(() => {
     match(containerRef)
-      .with({current: not(null)}, (el) => {
+      .with({ current: not(null) }, (el) => {
         toggleOverflow(isElementOverflown(el.current as HTMLDivElement));
       })
       .otherwise(() => {});
-  }, []);
+  }, [availableRooms]);
 
   function toggleCardCollapsing() {
     toggleCollapse(!isCollapsed);

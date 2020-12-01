@@ -1,5 +1,5 @@
 import { Subject, throwError } from 'rxjs';
-import { map, catchError } from 'rxjs/operators';
+import { map, catchError, switchMap } from 'rxjs/operators';
 import { ajax, AjaxResponse } from 'rxjs/ajax';
 
 const jsonResponse = require('../../sample-hotel-data.json');
