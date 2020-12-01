@@ -12,10 +12,11 @@ interface Props {
 
 function createStoreProvider<ContextType>(
   ContextProvider: any,
-  sources: Record<string, DataSource>
+  sources: Record<string, DataSource>,
+  initialState: Record<string, any> = {}
 ) {
   return function StateProvider({ children }: Props) {
-    const [state, setState] = React.useState<State>({});
+    const [state, setState] = React.useState<State>(initialState);
 
     React.useEffect(() => {
       const sourcesSubscriptions = Object.entries(sources).map(
