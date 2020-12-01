@@ -1,31 +1,21 @@
 import React from 'react';
-import { match } from 'ts-pattern';
+import { match, not, __ } from 'ts-pattern';
 import styled from 'styled-components';
 
 import LocaleContext from 'contexts/LocaleContext';
 
 import Colors from 'constants/colors';
 
-import Nothing from 'components/Nothing';
 import { TitleSmall, TextMedium, TitleMedium } from 'components/typography';
 import { PrimaryButton } from 'components/buttons';
 import ChevronRight from 'components/icons/ChevronRight';
 
 import { isElementOverflown } from 'utils/dom';
+import { toFixed } from 'utils/currency';
 
 import { DealType, IOfferDetails } from 'selectors/deals';
 
 import { Currency } from '../../types/deal';
-
-interface Props {
-  deals: Record<string, IOfferDetails[]> | null;
-}
-
-function toFixed(num: number, fixed: number) {
-  const re = new RegExp('^-?\\d+(?:.\\d{0,' + (fixed || -1) + '})?');
-  //@ts-ignore
-  return num.toString().match(re)[0];
-}
 
 const sortByDetails = (room: IOfferDetails, nextRoom: IOfferDetails) => {
   if (room.details.length > nextRoom.details.length) {
@@ -72,7 +62,10 @@ const DealItem = styled.div`
   margin: 0 8px;
   padding-top: 8px;
   padding-bottom: 8px;
-  border-bottom: 1px solid ${Colors.TropicalBlue};
+  
+  &:not(:first-child) {
+    border-top: 1px solid ${Colors.TropicalBlue};
+  }
 `;
 
 const DetailsText = styled(TextMedium)`
@@ -163,6 +156,9 @@ const MoreDeals = styled.button`
   background-color: rgba(255, 255, 255, 0.95);
   border: none;
   outline: inherit;
+  box-shadow: 0 1.5px 4px 0 rgba(145,175,209,0.24);
+  border-bottom-right-radius: 7px;
+  border-bottom-left-radius: 7px;
 `;
 
 const MoreDealsText = styled(TextMedium)`
@@ -196,12 +192,12 @@ function Deal({
   const [isOverflown, toggleOverflow] = React.useState(false);
   const [isCollapsed, toggleCollapse] = React.useState(true);
   const { locale } = React.useContext(LocaleContext);
-  const containerRef = React.useRef(null);
+  const containerRef = React.useRef<HTMLDivElement | null>(null);
 
   React.useEffect(() => {
-    match<HTMLElement | null>(containerRef.current)
-      .with({}, (el) => {
-        toggleOverflow(isElementOverflown(el));
+    match(containerRef)
+      .with({current: not(null)}, (el) => {
+        toggleOverflow(isElementOverflown(el.current as HTMLDivElement));
       })
       .otherwise(() => {});
   }, []);
@@ -262,22 +258,4 @@ function Deal({
   );
 }
 
-function DealsList({ deals }: Props) {
-  return match(deals)
-    .with({}, (deals) => (
-      <div data-testid="deals">
-        {Object.entries(deals as Record<string, IOfferDetails[]>).map(
-          ([roomName, availableRooms]) => (
-            <Deal
-              key={roomName}
-              roomName={roomName}
-              availableRooms={availableRooms}
-            />
-          )
-        )}
-      </div>
-    ))
-    .otherwise(Nothing);
-}
-
-export default DealsList;
+export default Deal;
