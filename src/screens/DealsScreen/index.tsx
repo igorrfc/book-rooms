@@ -3,11 +3,12 @@ import { concat, defer } from 'rxjs';
 import { match } from 'ts-pattern';
 import styled from 'styled-components';
 
+import Colors from 'constants/colors';
 import { IStoreContext } from 'types/storeContext';
 import { Status } from 'types/storeContext';
 
 import Nothing from 'components/Nothing';
-import { TitleSmall, TextMedium } from 'components/typography';
+import { TitleMedium, TitleSmall } from 'components/typography';
 
 import { groupedDealsByRoom } from 'selectors/deals';
 
@@ -15,20 +16,31 @@ import DealsList from './DealsList';
 
 import StoreContext from 'contexts/StoreContext';
 
-const Container = styled.div`
-  padding: 0 5%;
-`;
-
 const Header = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 20px 2%;
+  box-shadow: 0 1px 0 0 rgba(0, 44, 97, 0.1);
+  margin-bottom: 17px;
 `;
 
-const HotelName = styled(TextMedium)`
+const Container = styled.div`
+  padding: 0 5%;
+  background-color: ${Colors.White};
+`;
+
+const HotelName = styled(TitleSmall)`
   text-transform: uppercase;
+  font-size: 12px;
+  font-weight: bold;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.55;
+  letter-spacing: normal;
+  text-align: center;
+  color: #a3acb8;
 `;
 
 function Loading() {
@@ -56,19 +68,21 @@ function DealsScreen() {
   }, []);
 
   return (
-    <Container>
+    <>
       <Header>
-        <TitleSmall>All Deals</TitleSmall>
+        <TitleMedium>All Deals</TitleMedium>
         <HotelName>Doubletree by hilton hotels</HotelName>
       </Header>
-      {match({ isLoading, state })
-        .with({ isLoading: true }, Loading)
-        .with(
-          { state: { deals: { status: Status.Success, data: {} } } },
-          ({ state }) => <DealsList deals={groupedDealsByRoom(state)} />
-        )
-        .otherwise(Nothing)}
-    </Container>
+      <Container>
+        {match({ isLoading, state })
+          .with({ isLoading: true }, Loading)
+          .with(
+            { state: { deals: { status: Status.Success, data: {} } } },
+            ({ state }) => <DealsList deals={groupedDealsByRoom(state)} />
+          )
+          .otherwise(Nothing)}
+      </Container>
+    </>
   );
 }
 

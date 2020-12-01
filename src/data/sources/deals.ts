@@ -9,7 +9,7 @@ interface Response extends AjaxResponse {
 }
 
 const dealsAjax$ = ajax({
-  url: 'https://httpbin.org/delay/0.1',
+  url: 'https://httpbin.org/delay/0.5',
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',

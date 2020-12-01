@@ -4,13 +4,16 @@ import styled from 'styled-components';
 
 import LocaleContext from 'contexts/LocaleContext';
 
+import Colors from 'constants/colors';
+
 import Nothing from 'components/Nothing';
 import { TitleSmall, TextMedium, TitleMedium } from 'components/typography';
 import { PrimaryButton } from 'components/buttons';
+import ChevronRight from 'components/icons/ChevronRight';
 
 import { isElementOverflown } from 'utils/dom';
 
-import { IOfferDetails } from 'selectors/deals';
+import { DealType, IOfferDetails } from 'selectors/deals';
 
 import { Currency } from '../../types/deal';
 
@@ -34,12 +37,23 @@ const sortByDetails = (room: IOfferDetails, nextRoom: IOfferDetails) => {
   return 0;
 };
 
-const DealCard = styled.div`
+const RoomTitle = styled(TitleSmall)`
+  color: ${Colors.EbonyClay};
+  margin-bottom: 7px;
+`;
+
+const DealContainer = styled.div`
+  margin-bottom: 35px;
   position: relative;
-  border-radius: 5px;
+`;
+
+const DealCard = styled.div<{ isCollapsed: boolean }>`
+  max-height: ${({ isCollapsed }) => (isCollapsed ? '326px' : 'auto')};
   overflow: hidden;
-  box-shadow: 0px 0px 5px 0px rgba(255, 0, 255, 1);
-  margin-bottom: 30px;
+  border-radius: 7px;
+  box-shadow: 0 1px 4px 0 rgba(145, 175, 209, 0.24),
+    0 0 1px 0 rgba(145, 175, 209, 0.24);
+  background-color: ${Colors.TitanWhite};
 `;
 
 const RoomImage = styled.div<{ url: string }>`
@@ -51,32 +65,32 @@ const RoomImage = styled.div<{ url: string }>`
   height: 170px;
 `;
 
-const DealContainer = styled.div`
+const DealItem = styled.div`
   display: flex;
   flex: 1;
   flex-direction: row;
-  padding: 5px;
+  margin: 0 8px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid ${Colors.TropicalBlue};
 `;
 
 const DetailsText = styled(TextMedium)`
   flex: 5;
+  color: ${Colors.ShuttleGray};
+  font-weight: 500;
+  font-stretch: normal;
+  font-style: normal;
 `;
 
-const Price = styled(TitleMedium)`
-  margin: 0;
-  display: flex;
-  align-items: center;
-`;
-
-const CurrencySymbol = styled.span`
-  font-size: 16px;
-  font-weight: 700;
-  margin-right: 2px;
-`;
-
-const NegotiationWrapper = styled.div`
+const NegotiationWrapper = styled.div<{ dealType: DealType }>`
   flex: 5;
   max-width: 95px;
+  color: ${({ dealType }) =>
+    match(dealType)
+      .with(DealType.Private, () => Colors.PurpleHeart)
+      .with(DealType.Negotiation, () => Colors.Tangerine)
+      .otherwise(() => Colors.EbonyClay)};
 `;
 
 const PriceWrapper = styled.div`
@@ -87,7 +101,7 @@ const PriceWrapper = styled.div`
 const RoomDetails = styled.div`
   display: flex;
   justify-content: space-between;
-  padding: 3px 10px;
+  padding-right: 10px;
   flex: 8;
   align-items: center;
 `;
@@ -97,37 +111,75 @@ const AddRoom = styled.div`
   display: flex;
 `;
 
-const DealType = styled.div`
-  background-color: grey;
-  padding: 3px;
+const DealTypePill = styled.div<{ dealType: DealType }>`
+  border-radius: 2px;
+  padding: 2px 1px 2px 2px;
+  background-color: ${({ dealType }) =>
+    match(dealType)
+      .with(DealType.Private, () => Colors.Periwinkle)
+      .with(DealType.Negotiation, () => Colors.ColonialWhite)
+      .otherwise(() => Colors.ShuttleGray)};
 `;
 
 const DealTypeText = styled(TextMedium)`
   text-align: center;
-  overflow: hidden;
   font-size: 10px;
+  font-weight: bold;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: normal;
+  letter-spacing: normal;
+`;
+
+const Price = styled(TitleMedium)`
+  margin: 0;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+`;
+
+const CurrencySymbol = styled.span`
+  font-size: 12px;
+  font-weight: 700;
+  margin-right: 2px;
+  opacity: 0.6;
+  line-height: 2px;
 `;
 
 const Deals = styled.div<{ isCollapsed: boolean }>`
-  height: ${({ isCollapsed }) => (isCollapsed ? '158px' : 'auto')};
-  margin-bottom: ${({ isCollapsed }) => (isCollapsed ? '0px' : '25px')};
+  max-height: ${({ isCollapsed }) => (isCollapsed ? '156px' : 'auto')};
+  padding-bottom: ${({ isCollapsed }) => (isCollapsed ? '0px' : '35px')};
 `;
 
-const MoreDeals = styled.div`
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  background-color: rgba(255, 255, 255, 0.8);
-  width: 100%;
+const MoreDeals = styled.button`
   display: flex;
   justify-content: center;
-`;
-
-const MoreDealsButton = styled.button`
-  background-color: transparent;
-  padding: 5px;
+  align-items: center;
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 35px;
+  background-color: rgba(255, 255, 255, 0.95);
   border: none;
   outline: inherit;
+`;
+
+const MoreDealsText = styled(TextMedium)`
+  font-size: 13px;
+  font-weight: 800;
+  font-stretch: normal;
+  font-style: normal;
+  color: ${Colors.ShuttleGray};
+`;
+
+const ChevronIcon = styled(ChevronRight).attrs({
+  width: 15,
+  height: 17,
+})<{ isCollapsed: boolean }>`
+  transform: ${({ isCollapsed }) =>
+    isCollapsed ? 'rotate(90deg)' : 'rotate(-90deg)'};
+  margin-left: 7px;
 `;
 
 const currencySymbol = {
@@ -159,53 +211,54 @@ function Deal({
   }
 
   return (
-    <div>
-      <TitleSmall>{roomName}</TitleSmall>
-      <DealCard key={roomName}>
-        <RoomImage url={availableRooms[0].roomImages[0]} />
-        <Deals ref={containerRef} isCollapsed={isCollapsed}>
-          {(availableRooms as IOfferDetails[])
-            .sort(sortByDetails)
-            .map((room) => (
-              <DealContainer key={room.id}>
-                <RoomDetails>
-                  <DetailsText>
-                    {room.details.length > 0
-                      ? room.details.map(locale).join(' • ')
-                      : null}
-                  </DetailsText>
-                  <NegotiationWrapper>
-                    {room.dealType ? (
-                      <DealType>
-                        <DealTypeText>{locale(room.dealType)}</DealTypeText>
-                      </DealType>
-                    ) : null}
+    <DealContainer>
+      <div>
+        <RoomTitle>{roomName}</RoomTitle>
+        <DealCard isCollapsed={isCollapsed} key={roomName}>
+          <RoomImage url={availableRooms[0].roomImages[0]} />
+          <Deals ref={containerRef} isCollapsed={isCollapsed}>
+            {(availableRooms as IOfferDetails[])
+              .sort(sortByDetails)
+              .map((room) => (
+                <DealItem key={room.id}>
+                  <RoomDetails>
+                    <DetailsText>
+                      {room.details.length > 0
+                        ? room.details.map(locale).join(' • ')
+                        : null}
+                    </DetailsText>
+                    <NegotiationWrapper dealType={room.dealType as DealType}>
+                      {room.dealType ? (
+                        <DealTypePill dealType={room.dealType}>
+                          <DealTypeText>{locale(room.dealType)}</DealTypeText>
+                        </DealTypePill>
+                      ) : null}
 
-                    <PriceWrapper>
-                      <Price>
-                        <CurrencySymbol>
-                          {currencySymbol[room.currency]}{' '}
-                        </CurrencySymbol>
-                        {toFixed(room.roomPrice, 2)}
-                      </Price>
-                    </PriceWrapper>
-                  </NegotiationWrapper>
-                </RoomDetails>
-                <AddRoom>
-                  <PrimaryButton>Add</PrimaryButton>
-                </AddRoom>
-              </DealContainer>
-            ))}
-        </Deals>
+                      <PriceWrapper>
+                        <Price>
+                          <CurrencySymbol>
+                            {currencySymbol[room.currency]}{' '}
+                          </CurrencySymbol>
+                          {toFixed(room.roomPrice, 2)}
+                        </Price>
+                      </PriceWrapper>
+                    </NegotiationWrapper>
+                  </RoomDetails>
+                  <AddRoom>
+                    <PrimaryButton>Add</PrimaryButton>
+                  </AddRoom>
+                </DealItem>
+              ))}
+          </Deals>
+        </DealCard>
         {isOverflown ? (
-          <MoreDeals>
-            <MoreDealsButton onClick={toggleCardCollapsing}>
-              More Deals
-            </MoreDealsButton>
+          <MoreDeals onClick={toggleCardCollapsing}>
+            <MoreDealsText>More Deals</MoreDealsText>
+            <ChevronIcon isCollapsed={isCollapsed} width={15} height={17} />
           </MoreDeals>
         ) : null}
-      </DealCard>
-    </div>
+      </div>
+    </DealContainer>
   );
 }
 
