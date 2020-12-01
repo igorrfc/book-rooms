@@ -6,7 +6,7 @@ import { first } from 'rxjs/operators';
 import createStoreProvider from 'utils/createStoreProvider';
 
 import StoreContext from 'contexts/StoreContext';
-import Deals from '../DealsScreen';
+import Deals from '..';
 
 function DealsScreen({ context, props = {} }) {
   const StoreProvider = createStoreProvider(

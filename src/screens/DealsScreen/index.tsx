@@ -1,6 +1,6 @@
 import React from 'react';
 import { concat, defer } from 'rxjs';
-import { match } from 'ts-pattern';
+import { match, __ } from 'ts-pattern';
 import styled from 'styled-components';
 
 import Colors from 'constants/colors';
@@ -10,11 +10,10 @@ import { Status } from 'types/storeContext';
 import Nothing from 'components/Nothing';
 import { TitleMedium, TitleSmall } from 'components/typography';
 
-import { groupedDealsByRoom } from 'selectors/deals';
-
-import DealsList from './DealsList';
-
+import { groupedDealsByRoom, IOfferDetails } from 'selectors/deals';
 import StoreContext from 'contexts/StoreContext';
+
+import Deal from './Deal';
 
 const Header = styled.div`
   display: flex;
@@ -47,6 +46,28 @@ function Loading() {
   return <h1 data-testid="loading">Loading...</h1>;
 }
 
+function DealsList({
+  deals,
+}: {
+  deals: Record<string, IOfferDetails[]> | null;
+}) {
+  return match(deals)
+    .with({}, (deals) => (
+      <div data-testid="deals">
+        {Object.entries(deals as Record<string, IOfferDetails[]>).map(
+          ([roomName, availableRooms]) => (
+            <Deal
+              key={roomName}
+              roomName={roomName}
+              availableRooms={availableRooms}
+            />
+          )
+        )}
+      </div>
+    ))
+    .otherwise(Nothing);
+}
+
 function DealsScreen() {
   const { sources, state } = React.useContext<IStoreContext>(StoreContext);
   const [isLoading, toggleLoading] = React.useState(false);
@@ -77,7 +98,7 @@ function DealsScreen() {
         {match({ isLoading, state })
           .with({ isLoading: true }, Loading)
           .with(
-            { state: { deals: { status: Status.Success, data: {} } } },
+            { state: { deals: { status: Status.Success, data: {offers: __} } } },
             ({ state }) => <DealsList deals={groupedDealsByRoom(state)} />
           )
           .otherwise(Nothing)}
