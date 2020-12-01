@@ -4,5 +4,5 @@ export default {
   'room.payLater': 'Pay Later',
   'room.negotiationDeal.private': 'Private Deal',
   'room.negotiationDeal.negotiation': 'Negotiation Deal',
-  breakfast: 'breakfast',
+  breakfast: 'Breakfast',
 };

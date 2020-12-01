@@ -10,7 +10,7 @@ function returnValue(value: any) {
   return () => value;
 }
 
-enum DealType {
+export enum DealType {
   Private = 'room.negotiationDeal.private',
   Negotiation = 'room.negotiationDeal.negotiation',
 }
