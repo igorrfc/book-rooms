@@ -4,11 +4,16 @@ import { Observable, Subject } from 'rxjs';
 import { Status } from 'types/storeContext';
 
 type State = Record<string, any>;
-type DataSource = { stream: Observable<any>; connector: Subject<any> };
+type DataSource = {
+  stream: Observable<any> | Subject<any>;
+  connector: Observable<any> | Subject<any>;
+};
 
 interface Props {
   children: JSX.Element | JSX.Element[];
 }
+
+const stateOracle = new Subject<{ sourceName: string; result: any }>();
 
 function createStoreProvider<ContextType>(
   ContextProvider: any,
@@ -22,20 +27,8 @@ function createStoreProvider<ContextType>(
       const sourcesSubscriptions = Object.entries(sources).map(
         ([sourceName, { connector }]) => {
           return connector.subscribe({
-            next: (res) =>
-              setState({
-                ...state,
-                [sourceName]: {
-                  ...state[sourceName],
-                  status: Status.Success,
-                  data: res,
-                },
-              }),
-            error: () =>
-              setState({
-                ...state,
-                [sourceName]: { ...state[sourceName], status: Status.Error },
-              }),
+            next: (result) => stateOracle.next({ sourceName, result }),
+            error: () => stateOracle.error({ sourceName }),
           });
         }
       );
@@ -44,6 +37,27 @@ function createStoreProvider<ContextType>(
         sourcesSubscriptions.forEach((subscription) =>
           subscription.unsubscribe()
         );
+    }, []);
+
+    React.useEffect(() => {
+      const stateOracleSub = stateOracle.subscribe({
+        next: ({ sourceName, result }) =>
+          setState({
+            ...state,
+            [sourceName]: {
+              ...state[sourceName],
+              status: Status.Success,
+              data: result,
+            },
+          }),
+        error: ({ sourceName }) =>
+          setState({
+            ...state,
+            [sourceName]: { ...state[sourceName], status: Status.Error },
+          }),
+      });
+
+      return () => stateOracleSub.unsubscribe();
     }, [state]);
 
     const contextValue = React.useMemo(() => ({ state, sources }), [state]);
