@@ -1,6 +1,7 @@
 import { IOffer } from './deal';
 import { Observable, Subject } from 'rxjs';
 import DealFilter from './dealFilter';
+import { DealsBasketMutations } from '../data/sources/dealsBasket';
 
 export enum Status {
   Error = 'error',
@@ -22,6 +23,11 @@ export interface IState {
     status: Status;
     data: DealFilter | undefined;
   };
+
+  dealsBasket: {
+    status: Status;
+    data: Record<string, number> | undefined;
+  };
 }
 
 export interface IStoreContext {
@@ -30,5 +36,9 @@ export interface IStoreContext {
   sources: {
     deals: { stream: Observable<any>; connector: Subject<any> };
     dealFilter: { stream: Subject<DealFilter>; connector: Subject<any> };
+    dealsBasket: {
+      stream: Subject<any>;
+      connector: Observable<DealsBasketMutations | Record<string, number>>;
+    };
   };
 }

@@ -15,6 +15,11 @@ import StoreContext from 'contexts/StoreContext';
 
 import Deal from './Deal';
 import Filters from './Filters';
+import {
+  DealsBasketAction,
+  DealsBasketMutations,
+} from '../../data/sources/dealsBasket';
+import DealsBasket from './DealsBasket';
 
 const Header = styled.div`
   display: flex;
@@ -75,6 +80,13 @@ function DealsList({
 function DealsScreen() {
   const { sources, state } = React.useContext<IStoreContext>(StoreContext);
   const [isLoading, toggleLoading] = React.useState(false);
+  const [isDealsBasketOpen, toggleDealsBasketVisibility] = React.useState(
+    false
+  );
+
+  const closeBasket = React.useCallback(() => {
+    toggleDealsBasketVisibility(false);
+  }, []);
 
   React.useEffect(() => {
     const connectorSub = sources.deals.connector.subscribe({
@@ -91,6 +103,18 @@ function DealsScreen() {
       streamSub.unsubscribe();
     };
   }, []);
+
+  React.useEffect(() => {
+    const dealsBasketSub = sources.dealsBasket.stream.subscribe({
+      next: ({ action }: DealsBasketMutations) => {
+        if (!isDealsBasketOpen && action === DealsBasketAction.Increment) {
+          toggleDealsBasketVisibility(true);
+        }
+      },
+    });
+
+    return () => dealsBasketSub.unsubscribe();
+  }, [isDealsBasketOpen]);
 
   return (
     <>
@@ -114,6 +138,8 @@ function DealsScreen() {
           )
           .otherwise(Nothing)}
       </Container>
+
+      {isDealsBasketOpen ? <DealsBasket closeBasket={closeBasket} /> : null}
     </>
   );
 }

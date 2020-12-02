@@ -43,6 +43,10 @@ describe('DealsScreen', () => {
         stream: of(null),
         connector: new Subject(),
       },
+      dealsBasket: {
+        stream: of({}),
+        connector: new Subject(),
+      },
     };
 
     render(
@@ -74,7 +78,12 @@ describe('DealsScreen', () => {
         stream: of(null),
         connector: new Subject(),
       },
+      dealsBasket: {
+        stream: of({}),
+        connector: new Subject(),
+      },
     };
+
     const state = {
       deals: {},
     };

@@ -1,12 +1,12 @@
 import React from 'react';
-import { match, not, __ } from 'ts-pattern';
+import { match, not } from 'ts-pattern';
 import styled from 'styled-components';
 
 import LocaleContext from 'contexts/LocaleContext';
 
 import Colors from 'constants/colors';
 
-import { TitleSmall, TextMedium, TitleMedium } from 'components/typography';
+import { TextMedium, TitleMedium, TitleSmall } from 'components/typography';
 import { PrimaryButton } from 'components/buttons';
 import ChevronRight from 'components/icons/ChevronRight';
 
@@ -15,7 +15,13 @@ import { toFixed } from 'utils/currency';
 
 import { DealType, IOfferDetails } from 'selectors/deals';
 
-import { Currency } from '../../types/deal';
+import currencySymbol from 'constants/currencySymbol';
+import StoreContext from '../../contexts/StoreContext';
+import {
+  DealsBasketAction,
+  DealsBasketMutations,
+} from '../../data/sources/dealsBasket';
+import { NextObserver, Subject } from 'rxjs';
 
 const sortByDetails = (room: IOfferDetails, nextRoom: IOfferDetails) => {
   if (room.details.length > nextRoom.details.length) {
@@ -178,10 +184,6 @@ const ChevronIcon = styled(ChevronRight).attrs({
   margin-left: 7px;
 `;
 
-const currencySymbol = {
-  [Currency.EUR]: '€',
-};
-
 function Deal({
   roomName,
   availableRooms,
@@ -192,6 +194,7 @@ function Deal({
   const [isOverflown, toggleOverflow] = React.useState(false);
   const [isCollapsed, toggleCollapse] = React.useState(true);
   const { locale } = React.useContext(LocaleContext);
+  const { sources } = React.useContext(StoreContext);
   const containerRef = React.useRef<HTMLDivElement | null>(null);
 
   React.useEffect(() => {
@@ -204,6 +207,15 @@ function Deal({
 
   function toggleCardCollapsing() {
     toggleCollapse(!isCollapsed);
+  }
+
+  function addRoomToBasket(id: string) {
+    return () => {
+      sources.dealsBasket.stream.next({
+        action: DealsBasketAction.Increment,
+        id,
+      });
+    };
   }
 
   return (
@@ -241,7 +253,9 @@ function Deal({
                     </NegotiationWrapper>
                   </RoomDetails>
                   <AddRoom>
-                    <PrimaryButton>Add</PrimaryButton>
+                    <PrimaryButton onClick={addRoomToBasket(room.id)}>
+                      Add
+                    </PrimaryButton>
                   </AddRoom>
                 </DealItem>
               ))}

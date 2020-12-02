@@ -1,4 +1,4 @@
-import { filteredDeals, groupedDealsByRoom } from '../deals';
+import { filteredDeals, groupedDealsByRoom, dealsBasketItems } from '../deals';
 import DealFilter from '../../types/dealFilter';
 
 describe('deals selectors', () => {
@@ -613,6 +613,99 @@ describe('deals selectors', () => {
           ][0].dealType
         ).toBe('room.negotiationDeal.private');
       });
+    });
+  });
+
+  describe('dealsBasketItems', () => {
+    it("selects the deals id and quantities present on dealsBasket and return a list with deal's general info", () => {
+      const state = {
+        dealsBasket: {
+          data: {
+            'e9c3f14241544d25cb53aa14cf2dc2efaa42268e5c41302b5ca4c17c14680b1c:00': 3,
+          },
+        },
+        deals: {
+          data: {
+            offers: [
+              {
+                availableRooms: 2,
+                bookURI:
+                  'https://r.findhotel.net?pid=ian&sid=0d6b5caeb932928d2d4ece6cd9bfc44561d1c02d&oid=e9c3f14241544d25cb53aa14cf2dc2efaa42268e5c41302b5ca4c17c14680b1c:00&lbl=&ofd=book_uri%3Dcampaign_reference%253D%2526destination%253Dhttps%25253A%25252F%25252Fie.hotels.com%25252Fsearch.do%25253Fmpd%25253DEUR%252526cur%25253DEUR%252526q-check-out%25253D2020-11-22%252526mpe%25253D1603299050%252526mph%25253D0%252526q-check-in%25253D2020-11-21%252526locale%25253Den_IE%252526f-hotel-id%25253D149471%252526destination-id%25253D12508675%252526pos%25253DHCOM_IE%252526q-rooms%25253D1%252526q-room-0-adults%25253D2%252526rateplanid%25253D226102851%252526mpb%25253D12.79%252526mpa%25253D75.24%252526cur%25253DEUR%252526rffrid%25253Dtms.hcom.NL.010.001.01.000.000',
+                canPayLater: true,
+                currency: 'EUR',
+                hasFreeCancellation: true,
+                id:
+                  'e9c3f14241544d25cb53aa14cf2dc2efaa42268e5c41302b5ca4c17c14680b1c:00',
+                integrationType: 'redirect',
+                isAnchorPriceOffer: false,
+                isCheapest: false,
+                isSharedRoom: false,
+                isTopOffer: false,
+                meals: ['breakfast'],
+                providerCode: 'IAN',
+                providerHotelId: '149471',
+                proxyProviderCode: 'IAN',
+                rateBasedOnNumberOfRooms: null,
+                rateBreakdown: {
+                  baseRate: 75.24,
+                  taxes: 12.79,
+                  localTaxes: 0,
+                },
+                roomName: 'Deluxe Room, 1 King Bed, Accessible, Non Smoking',
+                tags: [],
+                cug: null,
+                cancellationPolicy: {
+                  freeRefundableUntil: null,
+                  description: '',
+                },
+              },
+              {
+                availableRooms: 2,
+                bookURI:
+                  'https://r.findhotel.net?pid=ian&sid=0d6b5caeb932928d2d4ece6cd9bfc44561d1c02d&oid=e9c3f14241544d25cb53aa14cf2dc2efaa42268e5c41302b5ca4c17c14680b1c:00&lbl=&ofd=book_uri%3Dcampaign_reference%253D%2526destination%253Dhttps%25253A%25252F%25252Fie.hotels.com%25252Fsearch.do%25253Fmpd%25253DEUR%252526cur%25253DEUR%252526q-check-out%25253D2020-11-22%252526mpe%25253D1603299050%252526mph%25253D0%252526q-check-in%25253D2020-11-21%252526locale%25253Den_IE%252526f-hotel-id%25253D149471%252526destination-id%25253D12508675%252526pos%25253DHCOM_IE%252526q-rooms%25253D1%252526q-room-0-adults%25253D2%252526rateplanid%25253D226102851%252526mpb%25253D12.79%252526mpa%25253D75.24%252526cur%25253DEUR%252526rffrid%25253Dtms.hcom.NL.010.001.01.000.000',
+                canPayLater: true,
+                currency: 'EUR',
+                hasFreeCancellation: true,
+                id:
+                  'e3c3f14241544d25cb53aa14cf2dc2efaa42268e5c41302b5ca4c17c14680b1c:00',
+                integrationType: 'redirect',
+                isAnchorPriceOffer: false,
+                isCheapest: false,
+                isSharedRoom: false,
+                isTopOffer: false,
+                meals: ['breakfast'],
+                providerCode: 'IAN',
+                providerHotelId: '149471',
+                proxyProviderCode: 'IAN',
+                rateBasedOnNumberOfRooms: null,
+                rateBreakdown: {
+                  baseRate: 75.24,
+                  taxes: 12.79,
+                  localTaxes: 0,
+                },
+                roomName: 'Deluxe Room, 1 King Bed, Accessible, Non Smoking',
+                tags: [],
+                cug: null,
+                cancellationPolicy: {
+                  freeRefundableUntil: null,
+                  description: '',
+                },
+              },
+            ],
+          },
+        },
+      };
+
+      expect(dealsBasketItems(state)).toEqual([
+        {
+          currency: 'EUR',
+          id:
+            'e9c3f14241544d25cb53aa14cf2dc2efaa42268e5c41302b5ca4c17c14680b1c:00',
+          name: 'Deluxe Room, 1 King Bed, Accessible, Non Smoking',
+          price: 88.03,
+          qty: 3,
+        },
+      ]);
     });
   });
 });
