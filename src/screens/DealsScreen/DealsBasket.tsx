@@ -218,8 +218,11 @@ function DealsBasket({ closeBasket }: Props) {
   }, []);
 
   return (
-    <Container data-test-id="DealsBasket">
-      <BackgroundOverlay onClick={closeBasket} />
+    <Container data-testid="DealsBasket">
+      <BackgroundOverlay
+        data-testid="DealsBasketOverlay"
+        onClick={closeBasket}
+      />
 
       <BasketContainer>
         <BasketTitle>Room Selection</BasketTitle>

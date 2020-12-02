@@ -50,11 +50,19 @@ function NumberInput({
 }: Props) {
   return (
     <InputWrapper>
-      <IteratorButton disabled={disableDecrement} onClick={onDecrement}>
+      <IteratorButton
+        data-testid="DecrementButton"
+        disabled={disableDecrement}
+        onClick={onDecrement}
+      >
         -
       </IteratorButton>
-      <Input readOnly type="number" value={value} />
-      <IteratorButton disabled={disableIncrement} onClick={onIncrement}>
+      <Input data-testid="NumberInput" readOnly type="number" value={value} />
+      <IteratorButton
+        data-testid="IncrementButton"
+        disabled={disableIncrement}
+        onClick={onIncrement}
+      >
         +
       </IteratorButton>
     </InputWrapper>
