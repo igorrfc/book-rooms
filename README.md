@@ -1,80 +1,61 @@
-# FindHotel Front-end Engineer Assignment
+# Book Rooms app
 
-Thanks for applying for the Front-end Engineer position at FindHotel!
+A sample app to search hotel deals and easily booking them :)
 
-This coding challenge will serve as the first step in the hiring process, the goal is to show case how you work and if it is decided to proceed with the process, will be the starting point of our technical interview.
+![Trades Manager](https://user-images.githubusercontent.com/7783787/100944629-6e216b00-34de-11eb-884c-395d6c4348f2.png)
 
-There are two parts to the challenge, the first is developing the visual components of a supplied design. The second part is about how you implement, test and explain business logic.
+## Prerequisites
+- **Node version**: v12.18.3
+- **Yarn version**: 1.22.5
 
-## Time to spend on the assignment
+## Initial setup
 
-We don't assign a fixed time deadline for it, but after you’ve read the assignment, please let us know when you’re planning to complete it. After you complete the assignment we'll review it internally and if we evaluate it to be positive, we'll schedule a technical interview to discuss the results together. As said, feel free to make some concessions under time pressure, just let us know what parts you've focused on most.
+```sh
+yarn install
+```
 
-## Technology and Frameworks
+## Start the server
 
-This project is based on React as that is what we use here at FindHotel, however this is not a hard requirement. If you prefer to use another technology, feel free to set up the assignment with your tools of choice.
+```sh
+yarn start
+```
 
-We use Redux at FindHotel, but again you're free to choose any information management technology you'd like.
+## Run tests
 
-Finally, we prefer to use a typed dialect such as TypeScript or Flow, so it is a plus for you to showcase the use of it, but you are allowed to use any JS flavor.
+```sh
+yarn test
+```
 
-Styling can be done via CSS, or a CSS-in-JS framework of your choice (we use https://github.com/emotion-js/emotion).
+### Architecture/tooling details
 
-## The assignment
+* [x] UI built with React
+* [x] State management made with a mix of React.Context API and RxJS
+* [x] Tests with Jest and testing-library/react
 
-Please note for this assignment you are not required to build any server side logic, you can build all logic in the client-side.
-Build the application in a responsive way, so it will adapt to different phone screen sizes.
+### Folder Structure
 
-### Part 1: Building the supplied UI based on the designs
+This is an overview of some of the core project's folders:
+```
+book-rooms/
+  src/
+    components/
+    constants/
+    contexts/
+        LocaleContext.ts
+        StoreContext.ts
+    data/
+        sources/
+    screens/
+    selectors/
+    types/
+```
 
-Please see the following screenshots for the designs to build. We provided a sample [JSON file](sample-hotel-data.json) that you can use to render the room cards.
+**When should I use those folders?**
+* **components/**: Here you will place the reusable (a.k.a generic) components;
+* **constants/**: Here you will store the constants you need to use in different places;
+* **contexts/**: This is the folder responsible to store the react contexts used throughout the app. The main ones are the LocaleContext (responsible for giving the components a translation function) and the StoreContext (giving components access to the global state);
+* **data/sources/**: This directory stores the most important asset we consume on the app: the **data**. Here is the place to store whatever data source the app will consume: be it a ajax request to a specific endpoint, an object which will be used to represent a domain state, and the list goes on...;
+* **screens**: Here are the screens of the app;
+* **selectors**: Selectors are the main way to connect to store and pipe the data on a human-friendly shape to the components. The data will be stored on StoreContext on the most raw form as possible, selectors are the ones responsible to deliver it in a way it'll be useful for your users.
+* **types**: Here you'll store the typings for the data you're handling in the app ;)
 
-The [Zeplin Project](https://zpl.io/2yN6mZo) can help you with the visual implementation, please request access from the recruiter if you don't have access yet.
-
-
-Room Selection Screen | Room Basket Overlay
--|-
-![Room Selection](1-room-selection.png "Room Selection Screen") | ![Room Basket Overlay](2-room-basket-overlay.png "Room Basket Overlay")
-
-
-#### Provided sample data
-A note about the data set provided: feel free to use random images for the hotels, there's no need to include the images from the design (you can download a few from our website if you like).
-
-Some hotel objects contain `meals` (free breakfast), `cancellationPolicy` and `cug` properties. The latter specifies the deal type such as `private` or `negotiation`. The `rateBreakdown` contains split data on prices for the hotels, you can decide to show prices including or excluding taxes based on your preference.
-
-### Part 2: Implementing business logic
-
-In the supplied designs you see there are two pieces of business logic to implement. The first is filtering of rooms based on their properties. You can implement this filtering completely on the client side.
-
-The other logic you're required to build is the "room basket" concept. Please keep the following requirements in mind:
-
-* The user can add maximum of 5 rooms of a type to a basket
-* In the basket view, when removing the last of a room type, it should remove the room from the basket.
-* The room should keep state to show whether it is in a basket or not. Clicking the check mark of an already selected room should remove it from the basket.
-
-It is recommended to write automated tests (unit or integration) to verify and document the business logic.
-
-### Bonus points
-
-* Build a swipeable image gallery in the hotel card.
-* Prepare your application to work with different languages (i18n).
-* Implement a scaled up version for tablet / desktop devices. Note there is no design supplied, so you'll need to use your imagination if you go this route.
-
-## The sample project
-
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-
-In the project directory, you can run:
-
-### `npm start`
-
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
