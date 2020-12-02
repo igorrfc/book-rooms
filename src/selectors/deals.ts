@@ -1,10 +1,27 @@
 import { createSelector } from 'reselect';
 import { contains, groupBy, ifElse, pipe, prop } from 'ramda';
-import { match } from 'ts-pattern';
+import { match, not, __ } from 'ts-pattern';
 
 import { Cug, Currency, IOffer, Meal, Tags } from 'types/deal';
 import { IState } from 'types/storeContext';
 import DealFilter from '../types/dealFilter';
+
+export interface IOfferDetails {
+  id: string;
+  details: string[];
+  dealType: DealType | null;
+  roomPrice: number;
+  roomImages: string[];
+  currency: Currency;
+}
+
+export interface IDealBasketItem {
+  id: string;
+  qty: number;
+  name: string;
+  currency: Currency;
+  price: number;
+}
 
 function returnValue(value: any) {
   return () => value;
@@ -44,17 +61,9 @@ export enum DealType {
   Negotiation = 'room.negotiationDeal.negotiation',
 }
 
-export interface IOfferDetails {
-  id: string;
-  details: string[];
-  dealType: DealType | null;
-  roomPrice: number;
-  roomImages: string[];
-  currency: Currency;
-}
-
 const deals = ({ deals }: IState) => deals;
 const dealFilter = ({ dealFilter }: IState) => dealFilter;
+const dealsBasket = ({ dealsBasket }: IState) => dealsBasket;
 
 export const filteredDeals = createSelector(
   deals,
@@ -122,3 +131,35 @@ export const groupedDealsByRoom = createSelector(filteredDeals, (offers) => {
     {}
   );
 });
+
+export const dealsBasketItems = createSelector(
+  deals,
+  dealsBasket,
+  (deals, dealsBasket) => {
+    return match({ deals, dealsBasket })
+      .with(
+        {
+          deals: { data: { offers: __ } },
+          dealsBasket: { data: not(undefined) },
+        },
+        ({ deals, dealsBasket }) =>
+          Object.entries(dealsBasket.data).map(([dealId, qty]) => {
+            const deal = deals.data.offers.filter(
+              (deal) => deal.id === dealId
+            )[0];
+
+            return {
+              id: deal.id,
+              qty: qty,
+              name: deal.roomName,
+              currency: deal.currency,
+              price: Object.values(deal.rateBreakdown).reduce(
+                (acc, cur) => acc + cur,
+                0
+              ),
+            };
+          })
+      )
+      .otherwise(() => []);
+  }
+);
