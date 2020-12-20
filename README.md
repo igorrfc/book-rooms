@@ -1,8 +1,6 @@
 # Book Rooms app
 
-A sample app to search hotel deals and easily booking them :)
-
-![Trades Manager](https://user-images.githubusercontent.com/7783787/100944629-6e216b00-34de-11eb-884c-395d6c4348f2.png)
+![Trades Manager](https://user-images.githubusercontent.com/7783787/102716518-29a61580-42bb-11eb-8bd7-99b391b43e58.png)
 
 ## Prerequisites
 - **Node version**: v12.18.3
